@@ -914,8 +914,8 @@ function getErrorMap() {
   return overrideErrorMap;
 }
 var makeIssue = (params) => {
-  const { data, path: path2, errorMaps, issueData } = params;
-  const fullPath = [...path2, ...issueData.path || []];
+  const { data, path: path3, errorMaps, issueData } = params;
+  const fullPath = [...path3, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -1040,11 +1040,11 @@ var errorUtil;
 var _ZodEnum_cache;
 var _ZodNativeEnum_cache;
 var ParseInputLazyPath = class {
-  constructor(parent, value, path2, key) {
+  constructor(parent, value, path3, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path2;
+    this._path = path3;
     this._key = key;
   }
   get path() {
@@ -7053,6 +7053,8 @@ import {
 } from "agent-twitter-client";
 
 // src/plugins/SttTtsSpacesPlugin.ts
+import * as fs2 from "fs";
+import * as path2 from "path";
 import { spawn } from "child_process";
 import {
   elizaLogger as elizaLogger6,
@@ -7344,6 +7346,9 @@ var SttTtsPlugin = class {
         merged.set(c, offset);
         offset += c.length;
       }
+      const timestamp = Date.now();
+      const filePath = path2.join(__dirname, `${timestamp}.pcm`);
+      fs2.writeFileSync(filePath, Buffer.from(merged.buffer));
       const wavBuffer = await this.convertPcmToWavInMemory(merged, 48e3);
       const sttText = await this.transcriptionService.transcribe(wavBuffer);
       elizaLogger6.log(
@@ -7359,6 +7364,7 @@ var SttTtsPlugin = class {
       elizaLogger6.log(
         `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`
       );
+      console.log("STT => user=", userId, "text=", sttText);
       const replyText = await this.handleUserMessage(sttText, userId);
       if (!replyText || !replyText.length || !replyText.trim()) {
         elizaLogger6.warn(

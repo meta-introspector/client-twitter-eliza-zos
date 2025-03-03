@@ -1,5 +1,6 @@
 // src/plugins/SttTtsPlugin.ts
-
+import * as fs from 'fs';
+import * as path from 'path';
 import { spawn } from "child_process";
 import {
     type ITranscriptionService,
@@ -291,6 +292,11 @@ export class SttTtsPlugin implements Plugin {
                 offset += c.length;
             }
 
+            const timestamp = Date.now();
+            const filePath = path.join(__dirname, `${timestamp}.pcm`);
+            fs.writeFileSync(filePath, Buffer.from(merged.buffer));
+
+
             // Convert PCM to WAV for STT
             const wavBuffer = await this.convertPcmToWavInMemory(merged, 48000);
 
@@ -312,7 +318,7 @@ export class SttTtsPlugin implements Plugin {
             elizaLogger.log(
                 `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`,
             );
-
+            console.log("STT => user=", userId, "text=", sttText);
             // Get response
             const replyText = await this.handleUserMessage(sttText, userId);
             if (!replyText || !replyText.length || !replyText.trim()) {
