@@ -4656,7 +4656,7 @@ var twitterEnvSchema = z.object({
   ENABLE_ACTION_PROCESSING: z.boolean(),
   ACTION_INTERVAL: z.number().int(),
   POST_IMMEDIATELY: z.boolean(),
-    TWITTER_SPACES_ENABLE: z.boolean().default(true),
+  TWITTER_SPACES_ENABLE: z.boolean().default(false),
   MAX_ACTIONS_PROCESSING: z.number().int(),
   ACTION_TIMELINE_TYPE: z.nativeEnum(ActionTimelineType2).default(ActionTimelineType2.ForYou)
 });
