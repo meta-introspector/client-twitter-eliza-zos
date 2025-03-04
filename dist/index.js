@@ -8202,12 +8202,12 @@ var TwitterClientInterface = {
 };
 
 // src/index.ts
-var twitterPlugin = {
+var twitterClientPlugin = {
   name: "twitter",
   description: "Twitter client",
   clients: [TwitterClientInterface]
 };
-var index_default = twitterPlugin;
+var index_default = twitterClientPlugin;
 export {
   index_default as default
 };
