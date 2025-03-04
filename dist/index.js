@@ -101,51 +101,50 @@ var ClientBase = class _ClientBase extends EventEmitter {
    * Parse the raw tweet data into a standardized Tweet object.
    */
   parseTweet(raw, depth = 0, maxDepth = 3) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y;
     const canRecurse = depth < maxDepth;
-    const quotedStatus = ((_a = raw.quoted_status_result) == null ? void 0 : _a.result) && canRecurse ? this.parseTweet(raw.quoted_status_result.result, depth + 1, maxDepth) : void 0;
-    const retweetedStatus = ((_b = raw.retweeted_status_result) == null ? void 0 : _b.result) && canRecurse ? this.parseTweet(raw.retweeted_status_result.result, depth + 1, maxDepth) : void 0;
+    const quotedStatus = raw.quoted_status_result?.result && canRecurse ? this.parseTweet(raw.quoted_status_result.result, depth + 1, maxDepth) : void 0;
+    const retweetedStatus = raw.retweeted_status_result?.result && canRecurse ? this.parseTweet(raw.retweeted_status_result.result, depth + 1, maxDepth) : void 0;
     const t = {
-      bookmarkCount: raw.bookmarkCount ?? ((_c = raw.legacy) == null ? void 0 : _c.bookmark_count) ?? void 0,
-      conversationId: raw.conversationId ?? ((_d = raw.legacy) == null ? void 0 : _d.conversation_id_str),
-      hashtags: raw.hashtags ?? ((_f = (_e = raw.legacy) == null ? void 0 : _e.entities) == null ? void 0 : _f.hashtags) ?? [],
+      bookmarkCount: raw.bookmarkCount ?? raw.legacy?.bookmark_count ?? void 0,
+      conversationId: raw.conversationId ?? raw.legacy?.conversation_id_str,
+      hashtags: raw.hashtags ?? raw.legacy?.entities?.hashtags ?? [],
       html: raw.html,
       id: raw.id ?? raw.rest_id ?? raw.id_str ?? void 0,
       inReplyToStatus: raw.inReplyToStatus,
-      inReplyToStatusId: raw.inReplyToStatusId ?? ((_g = raw.legacy) == null ? void 0 : _g.in_reply_to_status_id_str) ?? void 0,
-      isQuoted: ((_h = raw.legacy) == null ? void 0 : _h.is_quote_status) === true,
+      inReplyToStatusId: raw.inReplyToStatusId ?? raw.legacy?.in_reply_to_status_id_str ?? void 0,
+      isQuoted: raw.legacy?.is_quote_status === true,
       isPin: raw.isPin,
       isReply: raw.isReply,
-      isRetweet: ((_i = raw.legacy) == null ? void 0 : _i.retweeted) === true,
+      isRetweet: raw.legacy?.retweeted === true,
       isSelfThread: raw.isSelfThread,
-      language: (_j = raw.legacy) == null ? void 0 : _j.lang,
-      likes: ((_k = raw.legacy) == null ? void 0 : _k.favorite_count) ?? 0,
-      name: raw.name ?? ((_n = (_m = (_l = raw == null ? void 0 : raw.user_results) == null ? void 0 : _l.result) == null ? void 0 : _m.legacy) == null ? void 0 : _n.name) ?? ((_r = (_q = (_p = (_o = raw.core) == null ? void 0 : _o.user_results) == null ? void 0 : _p.result) == null ? void 0 : _q.legacy) == null ? void 0 : _r.name),
-      mentions: raw.mentions ?? ((_t = (_s = raw.legacy) == null ? void 0 : _s.entities) == null ? void 0 : _t.user_mentions) ?? [],
-      permanentUrl: raw.permanentUrl ?? (((_x = (_w = (_v = (_u = raw.core) == null ? void 0 : _u.user_results) == null ? void 0 : _v.result) == null ? void 0 : _w.legacy) == null ? void 0 : _x.screen_name) && raw.rest_id ? `https://x.com/${(_B = (_A = (_z = (_y = raw.core) == null ? void 0 : _y.user_results) == null ? void 0 : _z.result) == null ? void 0 : _A.legacy) == null ? void 0 : _B.screen_name}/status/${raw.rest_id}` : void 0),
-      photos: raw.photos ?? (((_E = (_D = (_C = raw.legacy) == null ? void 0 : _C.entities) == null ? void 0 : _D.media) == null ? void 0 : _E.filter((media) => media.type === "photo").map((media) => ({
+      language: raw.legacy?.lang,
+      likes: raw.legacy?.favorite_count ?? 0,
+      name: raw.name ?? raw?.user_results?.result?.legacy?.name ?? raw.core?.user_results?.result?.legacy?.name,
+      mentions: raw.mentions ?? raw.legacy?.entities?.user_mentions ?? [],
+      permanentUrl: raw.permanentUrl ?? (raw.core?.user_results?.result?.legacy?.screen_name && raw.rest_id ? `https://x.com/${raw.core?.user_results?.result?.legacy?.screen_name}/status/${raw.rest_id}` : void 0),
+      photos: raw.photos ?? (raw.legacy?.entities?.media?.filter((media) => media.type === "photo").map((media) => ({
         id: media.id_str,
         url: media.media_url_https,
         alt_text: media.alt_text
-      }))) || []),
+      })) || []),
       place: raw.place,
       poll: raw.poll ?? null,
       quotedStatus,
-      quotedStatusId: raw.quotedStatusId ?? ((_F = raw.legacy) == null ? void 0 : _F.quoted_status_id_str) ?? void 0,
-      quotes: ((_G = raw.legacy) == null ? void 0 : _G.quote_count) ?? 0,
-      replies: ((_H = raw.legacy) == null ? void 0 : _H.reply_count) ?? 0,
-      retweets: ((_I = raw.legacy) == null ? void 0 : _I.retweet_count) ?? 0,
+      quotedStatusId: raw.quotedStatusId ?? raw.legacy?.quoted_status_id_str ?? void 0,
+      quotes: raw.legacy?.quote_count ?? 0,
+      replies: raw.legacy?.reply_count ?? 0,
+      retweets: raw.legacy?.retweet_count ?? 0,
       retweetedStatus,
-      retweetedStatusId: ((_J = raw.legacy) == null ? void 0 : _J.retweeted_status_id_str) ?? void 0,
-      text: raw.text ?? ((_K = raw.legacy) == null ? void 0 : _K.full_text) ?? void 0,
+      retweetedStatusId: raw.legacy?.retweeted_status_id_str ?? void 0,
+      text: raw.text ?? raw.legacy?.full_text ?? void 0,
       thread: raw.thread || [],
-      timeParsed: raw.timeParsed ? new Date(raw.timeParsed) : ((_L = raw.legacy) == null ? void 0 : _L.created_at) ? new Date((_M = raw.legacy) == null ? void 0 : _M.created_at) : void 0,
-      timestamp: raw.timestamp ?? (((_N = raw.legacy) == null ? void 0 : _N.created_at) ? new Date(raw.legacy.created_at).getTime() / 1e3 : void 0),
-      urls: raw.urls ?? ((_P = (_O = raw.legacy) == null ? void 0 : _O.entities) == null ? void 0 : _P.urls) ?? [],
-      userId: raw.userId ?? ((_Q = raw.legacy) == null ? void 0 : _Q.user_id_str) ?? void 0,
-      username: raw.username ?? ((_U = (_T = (_S = (_R = raw.core) == null ? void 0 : _R.user_results) == null ? void 0 : _S.result) == null ? void 0 : _T.legacy) == null ? void 0 : _U.screen_name) ?? void 0,
-      videos: raw.videos ?? (((_X = (_W = (_V = raw.legacy) == null ? void 0 : _V.entities) == null ? void 0 : _W.media) == null ? void 0 : _X.filter((media) => media.type === "video")) ?? []),
-      views: ((_Y = raw.views) == null ? void 0 : _Y.count) ? Number(raw.views.count) : 0,
+      timeParsed: raw.timeParsed ? new Date(raw.timeParsed) : raw.legacy?.created_at ? new Date(raw.legacy?.created_at) : void 0,
+      timestamp: raw.timestamp ?? (raw.legacy?.created_at ? new Date(raw.legacy.created_at).getTime() / 1e3 : void 0),
+      urls: raw.urls ?? raw.legacy?.entities?.urls ?? [],
+      userId: raw.userId ?? raw.legacy?.user_id_str ?? void 0,
+      username: raw.username ?? raw.core?.user_results?.result?.legacy?.screen_name ?? void 0,
+      videos: raw.videos ?? (raw.legacy?.entities?.media?.filter((media) => media.type === "video") ?? []),
+      views: raw.views?.count ? Number(raw.views.count) : 0,
       sensitiveContent: raw.sensitiveContent
     };
     return t;
@@ -215,6 +214,7 @@ var ClientBase = class _ClientBase extends EventEmitter {
       elizaLogger.error(
         `Failed to login to Twitter. Retrying... (${retries} attempts left)`
       );
+      await new Promise((resolve) => setTimeout(resolve, 2e3));
       if (retries === 0) {
         elizaLogger.error(
           "Max retries reached. Exiting login process."
@@ -537,14 +537,13 @@ var ClientBase = class _ClientBase extends EventEmitter {
   async fetchProfile(username) {
     try {
       const profile = await this.requestQueue.add(async () => {
-        var _a;
         const profile2 = await this.twitterClient.getProfile(username);
         return {
           id: profile2.userId,
           username,
           screenName: profile2.name || this.runtime.character.name,
           bio: profile2.biography || typeof this.runtime.character.bio === "string" ? this.runtime.character.bio : this.runtime.character.bio.length > 0 ? this.runtime.character.bio[0] : "",
-          nicknames: ((_a = this.runtime.character.twitterProfile) == null ? void 0 : _a.nicknames) || []
+          nicknames: this.runtime.character.twitterProfile?.nicknames || []
         };
       });
       return profile;
@@ -914,8 +913,8 @@ function getErrorMap() {
   return overrideErrorMap;
 }
 var makeIssue = (params) => {
-  const { data, path: path3, errorMaps, issueData } = params;
-  const fullPath = [...path3, ...issueData.path || []];
+  const { data, path: path2, errorMaps, issueData } = params;
+  const fullPath = [...path2, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -1040,11 +1039,11 @@ var errorUtil;
 var _ZodEnum_cache;
 var _ZodNativeEnum_cache;
 var ParseInputLazyPath = class {
-  constructor(parent, value, path3, key) {
+  constructor(parent, value, path2, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path3;
+    this._path = path2;
     this._key = key;
   }
   get path() {
@@ -4661,7 +4660,7 @@ var twitterEnvSchema = z.object({
   ACTION_TIMELINE_TYPE: z.nativeEnum(ActionTimelineType2).default(ActionTimelineType2.ForYou)
 });
 function parseTargetUsers(targetUsersStr) {
-  if (!(targetUsersStr == null ? void 0 : targetUsersStr.trim())) {
+  if (!targetUsersStr?.trim()) {
     return [];
   }
   return targetUsersStr.split(",").map((user) => user.trim()).filter(Boolean);
@@ -4787,7 +4786,6 @@ async function buildConversationThread(tweet, client, maxReplies = 10) {
   const thread = [];
   const visited = /* @__PURE__ */ new Set();
   async function processThread(currentTweet, depth = 0) {
-    var _a;
     elizaLogger2.debug("Processing tweet:", {
       id: currentTweet.id,
       inReplyToStatusId: currentTweet.inReplyToStatusId,
@@ -4859,7 +4857,7 @@ async function buildConversationThread(tweet, client, maxReplies = 10) {
         if (parentTweet) {
           elizaLogger2.debug("Found parent tweet:", {
             id: parentTweet.id,
-            text: (_a = parentTweet.text) == null ? void 0 : _a.slice(0, 50)
+            text: parentTweet.text?.slice(0, 50)
           });
           await processThread(parentTweet, depth + 1);
         } else {
@@ -4884,13 +4882,10 @@ async function buildConversationThread(tweet, client, maxReplies = 10) {
   await processThread(tweet, 0);
   elizaLogger2.debug("Final thread built:", {
     totalTweets: thread.length,
-    tweetIds: thread.map((t) => {
-      var _a;
-      return {
-        id: t.id,
-        text: (_a = t.text) == null ? void 0 : _a.slice(0, 50)
-      };
-    })
+    tweetIds: thread.map((t) => ({
+      id: t.id,
+      text: t.text?.slice(0, 50)
+    }))
   });
   return thread;
 }
@@ -4920,7 +4915,6 @@ async function fetchMediaData(attachments) {
   );
 }
 async function sendTweet(client, content, roomId, twitterUsername, inReplyTo) {
-  var _a, _b, _c, _d, _e, _f;
   const maxTweetLength = client.twitterConfig.MAX_TWEET_LENGTH;
   const isLongTweet = maxTweetLength > 280;
   const tweetChunks = splitTweetContent(content.text, maxTweetLength);
@@ -4944,7 +4938,7 @@ async function sendTweet(client, content, roomId, twitterUsername, inReplyTo) {
       )
     );
     const body = await result.json();
-    const tweetResult = isLongTweet ? (_c = (_b = (_a = body == null ? void 0 : body.data) == null ? void 0 : _a.notetweet_create) == null ? void 0 : _b.tweet_results) == null ? void 0 : _c.result : (_f = (_e = (_d = body == null ? void 0 : body.data) == null ? void 0 : _d.create_tweet) == null ? void 0 : _e.tweet_results) == null ? void 0 : _f.result;
+    const tweetResult = isLongTweet ? body?.data?.notetweet_create?.tweet_results?.result : body?.data?.create_tweet?.tweet_results?.result;
     if (tweetResult) {
       const finalTweet = {
         id: tweetResult.rest_id,
@@ -5196,7 +5190,6 @@ var TwitterInteractionClient = class {
     handleTwitterInteractionsLoop();
   }
   async handleTwitterInteractions() {
-    var _a, _b;
     elizaLogger3.log("Checking Twitter interactions");
     const twitterUsername = this.client.profile.username;
     try {
@@ -5253,7 +5246,7 @@ var TwitterInteractionClient = class {
               const randomTweet = tweets[Math.floor(Math.random() * tweets.length)];
               selectedTweets.push(randomTweet);
               elizaLogger3.log(
-                `Selected tweet from ${username}: ${(_a = randomTweet.text) == null ? void 0 : _a.substring(0, 100)}`
+                `Selected tweet from ${username}: ${randomTweet.text?.substring(0, 100)}`
               );
             }
           }
@@ -5301,7 +5294,7 @@ var TwitterInteractionClient = class {
           const message = {
             content: {
               text: tweet.text,
-              imageUrls: ((_b = tweet.photos) == null ? void 0 : _b.map((photo) => photo.url)) || []
+              imageUrls: tweet.photos?.map((photo) => photo.url) || []
             },
             agentId: this.runtime.agentId,
             userId: userIdUUID,
@@ -5326,7 +5319,6 @@ var TwitterInteractionClient = class {
     message,
     thread
   }) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i;
     if (tweet.userId === this.client.profile.id && !this.client.twitterConfig.TWITTER_TARGET_USERS.includes(tweet.username)) {
       return;
     }
@@ -5385,7 +5377,7 @@ Description: ${desc.description}`).join("\n\n")}` : ""
         content: {
           text: tweet.text,
           url: tweet.permanentUrl,
-          imageUrls: ((_a = tweet.photos) == null ? void 0 : _a.map((photo) => photo.url)) || [],
+          imageUrls: tweet.photos?.map((photo) => photo.url) || [],
           inReplyTo: tweet.inReplyToStatusId ? stringToUuid3(
             tweet.inReplyToStatusId + "-" + this.runtime.agentId
           ) : void 0
@@ -5399,7 +5391,7 @@ Description: ${desc.description}`).join("\n\n")}` : ""
     const validTargetUsersStr = this.client.twitterConfig.TWITTER_TARGET_USERS.join(",");
     const shouldRespondContext = composeContext({
       state,
-      template: ((_b = this.runtime.character.templates) == null ? void 0 : _b.twitterShouldRespondTemplate) || ((_d = (_c = this.runtime.character) == null ? void 0 : _c.templates) == null ? void 0 : _d.shouldRespondTemplate) || twitterShouldRespondTemplate(validTargetUsersStr)
+      template: this.runtime.character.templates?.twitterShouldRespondTemplate || this.runtime.character?.templates?.shouldRespondTemplate || twitterShouldRespondTemplate(validTargetUsersStr)
     });
     const shouldRespond = await generateShouldRespond({
       runtime: this.runtime,
@@ -5423,7 +5415,7 @@ Description: ${desc.description}`).join("\n\n")}` : ""
           ).join("\n")
         ).join("\n\n") : ""
       },
-      template: ((_e = this.runtime.character.templates) == null ? void 0 : _e.twitterMessageHandlerTemplate) || ((_g = (_f = this.runtime.character) == null ? void 0 : _f.templates) == null ? void 0 : _g.messageHandlerTemplate) || twitterMessageHandlerTemplate
+      template: this.runtime.character.templates?.twitterMessageHandlerTemplate || this.runtime.character?.templates?.messageHandlerTemplate || twitterMessageHandlerTemplate
     });
     const response = await generateMessageResponse({
       runtime: this.runtime,
@@ -5454,7 +5446,7 @@ ${response.text}`
             return memories;
           };
           const action = this.runtime.actions.find((a) => a.name === response.action);
-          const shouldSuppressInitialMessage = action == null ? void 0 : action.suppressInitialMessage;
+          const shouldSuppressInitialMessage = action?.suppressInitialMessage;
           let responseMessages = [];
           if (!shouldSuppressInitialMessage) {
             responseMessages = await callback(response);
@@ -5482,7 +5474,7 @@ ${response.text}`
               responseMessage
             );
           }
-          const responseTweetId = (_i = (_h = responseMessages[responseMessages.length - 1]) == null ? void 0 : _h.content) == null ? void 0 : _i.tweetId;
+          const responseTweetId = responseMessages[responseMessages.length - 1]?.content?.tweetId;
           await this.runtime.processActions(
             message,
             responseMessages,
@@ -5513,7 +5505,6 @@ ${response.text}`;
     const thread = [];
     const visited = /* @__PURE__ */ new Set();
     async function processThread(currentTweet, depth = 0) {
-      var _a, _b;
       elizaLogger3.log("Processing tweet:", {
         id: currentTweet.id,
         inReplyToStatusId: currentTweet.inReplyToStatusId,
@@ -5551,7 +5542,7 @@ ${response.text}`;
             text: currentTweet.text,
             source: "twitter",
             url: currentTweet.permanentUrl,
-            imageUrls: ((_a = currentTweet.photos) == null ? void 0 : _a.map((photo) => photo.url)) || [],
+            imageUrls: currentTweet.photos?.map((photo) => photo.url) || [],
             inReplyTo: currentTweet.inReplyToStatusId ? stringToUuid3(
               currentTweet.inReplyToStatusId + "-" + this.runtime.agentId
             ) : void 0
@@ -5580,7 +5571,7 @@ ${response.text}`;
           if (parentTweet) {
             elizaLogger3.log("Found parent tweet:", {
               id: parentTweet.id,
-              text: (_b = parentTweet.text) == null ? void 0 : _b.slice(0, 50)
+              text: parentTweet.text?.slice(0, 50)
             });
             await processThread(parentTweet, depth + 1);
           } else {
@@ -5688,7 +5679,6 @@ var TwitterPostClient = class {
   discordApprovalChannelId;
   approvalCheckInterval;
   constructor(client, runtime) {
-    var _a;
     this.client = client;
     this.runtime = runtime;
     this.twitterUsername = this.client.twitterConfig.TWITTER_USERNAME;
@@ -5725,7 +5715,7 @@ var TwitterPostClient = class {
         "Twitter client initialized in dry run mode - no actual tweets should be posted"
       );
     }
-    const approvalRequired = ((_a = this.runtime.getSetting("TWITTER_APPROVAL_ENABLED")) == null ? void 0 : _a.toLocaleLowerCase()) === "true";
+    const approvalRequired = this.runtime.getSetting("TWITTER_APPROVAL_ENABLED")?.toLocaleLowerCase() === "true";
     if (approvalRequired) {
       const discordToken = this.runtime.getSetting(
         "TWITTER_APPROVAL_DISCORD_BOT_TOKEN"
@@ -5779,7 +5769,7 @@ var TwitterPostClient = class {
     }
     const generateNewTweetLoop = async () => {
       const lastPost = await this.runtime.cacheManager.get("twitter/" + this.twitterUsername + "/lastPost");
-      const lastPostTimestamp = (lastPost == null ? void 0 : lastPost.timestamp) ?? 0;
+      const lastPostTimestamp = lastPost?.timestamp ?? 0;
       const minMinutes = this.client.twitterConfig.POST_INTERVAL_MIN;
       const maxMinutes = this.client.twitterConfig.POST_INTERVAL_MAX;
       const randomMinutes = Math.floor(Math.random() * (maxMinutes - minMinutes + 1)) + minMinutes;
@@ -5912,7 +5902,6 @@ var TwitterPostClient = class {
     }
   }
   async sendStandardTweet(client, content, tweetId, mediaData) {
-    var _a, _b, _c;
     try {
       const standardTweetResult = await client.requestQueue.add(
         async () => await client.twitterClient.sendTweet(
@@ -5922,7 +5911,7 @@ var TwitterPostClient = class {
         )
       );
       const body = await standardTweetResult.json();
-      if (!((_c = (_b = (_a = body == null ? void 0 : body.data) == null ? void 0 : _a.create_tweet) == null ? void 0 : _b.tweet_results) == null ? void 0 : _c.result)) {
+      if (!body?.data?.create_tweet?.tweet_results?.result) {
         elizaLogger4.error("Error sending tweet; Bad response:", body);
         return;
       }
@@ -5972,7 +5961,6 @@ var TwitterPostClient = class {
    * Generates and posts a new tweet. If isDryRun is true, only logs what would have been posted.
    */
   async generateNewTweet() {
-    var _a;
     elizaLogger4.log("Generating new tweet");
     try {
       const roomId = stringToUuid4(
@@ -6003,7 +5991,7 @@ var TwitterPostClient = class {
       );
       const context = composeContext2({
         state,
-        template: ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterPostTemplate) || twitterPostTemplate
+        template: this.runtime.character.templates?.twitterPostTemplate || twitterPostTemplate
       });
       elizaLogger4.debug("generate post prompt:\n" + context);
       const response = await generateText({
@@ -6015,12 +6003,12 @@ var TwitterPostClient = class {
       let tweetTextForPosting = null;
       let mediaData = null;
       const parsedResponse = parseJSONObjectFromText(rawTweetContent);
-      if (parsedResponse == null ? void 0 : parsedResponse.text) {
+      if (parsedResponse?.text) {
         tweetTextForPosting = parsedResponse.text;
       } else {
         tweetTextForPosting = rawTweetContent.trim();
       }
-      if ((parsedResponse == null ? void 0 : parsedResponse.attachments) && (parsedResponse == null ? void 0 : parsedResponse.attachments.length) > 0) {
+      if (parsedResponse?.attachments && parsedResponse?.attachments.length > 0) {
         mediaData = await fetchMediaData(parsedResponse.attachments);
       }
       if (!tweetTextForPosting) {
@@ -6089,14 +6077,13 @@ var TwitterPostClient = class {
     }
   }
   async generateTweetContent(tweetState, options) {
-    var _a;
     const context = composeContext2({
       state: tweetState,
-      template: (options == null ? void 0 : options.template) || ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterPostTemplate) || twitterPostTemplate
+      template: options?.template || this.runtime.character.templates?.twitterPostTemplate || twitterPostTemplate
     });
     const response = await generateText({
       runtime: this.runtime,
-      context: (options == null ? void 0 : options.context) || context,
+      context: options?.context || context,
       modelClass: ModelClass2.SMALL
     });
     elizaLogger4.log("generate tweet content response:\n" + response);
@@ -6140,7 +6127,6 @@ var TwitterPostClient = class {
    * only simulates and logs actions without making API calls.
    */
   async processTweetActions() {
-    var _a;
     if (this.isProcessing) {
       elizaLogger4.log("Already processing tweet actions, skipping");
       return null;
@@ -6190,7 +6176,7 @@ Text: ${tweet.text}`
           );
           const actionContext = composeContext2({
             state: tweetState,
-            template: ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterActionTemplate) || twitterActionTemplate
+            template: this.runtime.character.templates?.twitterActionTemplate || twitterActionTemplate
           });
           const actionResponse = await generateTweetActions({
             runtime: this.runtime,
@@ -6251,7 +6237,6 @@ Text: ${tweet.text}`
    * @returns A promise that resolves to an array of results with details of executed actions.
    */
   async processTimelineActions(timelines) {
-    var _a, _b, _c, _d, _e;
     const results = [];
     for (const timeline of timelines) {
       const { actionResponse, tweetState, roomId, tweet } = timeline;
@@ -6307,7 +6292,7 @@ Text: ${tweet.text}`
               ).toLocaleString()}): ${t.text}`
             ).join("\n\n");
             const imageDescriptions = [];
-            if (((_a = tweet.photos) == null ? void 0 : _a.length) > 0) {
+            if (tweet.photos?.length > 0) {
               elizaLogger4.log(
                 "Processing images in tweet for context"
               );
@@ -6363,7 +6348,7 @@ ${imageDescriptions.map(
             const quoteContent = await this.generateTweetContent(
               enrichedState,
               {
-                template: ((_b = this.runtime.character.templates) == null ? void 0 : _b.twitterMessageHandlerTemplate) || twitterMessageHandlerTemplate
+                template: this.runtime.character.templates?.twitterMessageHandlerTemplate || twitterMessageHandlerTemplate
               }
             );
             if (!quoteContent) {
@@ -6389,7 +6374,7 @@ ${imageDescriptions.map(
                 )
               );
               const body = await result.json();
-              if ((_e = (_d = (_c = body == null ? void 0 : body.data) == null ? void 0 : _c.create_tweet) == null ? void 0 : _d.tweet_results) == null ? void 0 : _e.result) {
+              if (body?.data?.create_tweet?.tweet_results?.result) {
                 elizaLogger4.log(
                   "Successfully posted quote tweet"
                 );
@@ -6474,7 +6459,6 @@ ${quoteContent}`
    * have been replied without making API calls.
    */
   async handleTextOnlyReply(tweet, tweetState, executedActions) {
-    var _a, _b;
     try {
       const thread = await buildConversationThread(tweet, this.client);
       const formattedConversation = thread.map(
@@ -6483,7 +6467,7 @@ ${quoteContent}`
         ).toLocaleString()}): ${t.text}`
       ).join("\n\n");
       const imageDescriptions = [];
-      if (((_a = tweet.photos) == null ? void 0 : _a.length) > 0) {
+      if (tweet.photos?.length > 0) {
         elizaLogger4.log("Processing images in tweet for context");
         for (const photo of tweet.photos) {
           const description = await this.runtime.getService(
@@ -6527,7 +6511,7 @@ ${imageDescriptions.map((desc, i) => `Image ${i + 1}: ${desc}`).join("\n")}` : "
         }
       );
       const replyText = await this.generateTweetContent(enrichedState, {
-        template: ((_b = this.runtime.character.templates) == null ? void 0 : _b.twitterMessageHandlerTemplate) || twitterMessageHandlerTemplate
+        template: this.runtime.character.templates?.twitterMessageHandlerTemplate || twitterMessageHandlerTemplate
       });
       if (!replyText) {
         elizaLogger4.error("Failed to generate valid reply content");
@@ -6830,7 +6814,6 @@ var TwitterSearchClient = class {
     );
   }
   async engageWithSearchTerms() {
-    var _a;
     elizaLogger5.log("Engaging with search terms");
     try {
       const searchTerm = [...this.runtime.character.topics][Math.floor(Math.random() * this.runtime.character.topics.length)];
@@ -6899,7 +6882,7 @@ Text: ${tweet.text}
         elizaLogger5.log("Selected tweet ID:", tweetId);
         return;
       }
-      elizaLogger5.log("Selected tweet to reply to:", selectedTweet == null ? void 0 : selectedTweet.text);
+      elizaLogger5.log("Selected tweet to reply to:", selectedTweet?.text);
       if (selectedTweet.username === this.twitterUsername) {
         elizaLogger5.log("Skipping tweet from bot itself");
         return;
@@ -6973,7 +6956,7 @@ Images in Post (Described): ${imageDescriptions.join(", ")}
       await this.client.saveRequestMessage(message, state);
       const context = composeContext3({
         state,
-        template: ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterSearchTemplate) || twitterSearchTemplate
+        template: this.runtime.character.templates?.twitterSearchTemplate || twitterSearchTemplate
       });
       const responseContent = await generateMessageResponse2({
         runtime: this.runtime,
@@ -7053,8 +7036,6 @@ import {
 } from "agent-twitter-client";
 
 // src/plugins/SttTtsSpacesPlugin.ts
-import * as fs2 from "fs";
-import * as path2 from "path";
 import { spawn } from "child_process";
 import {
   elizaLogger as elizaLogger6,
@@ -7191,28 +7172,27 @@ var SttTtsPlugin = class {
     elizaLogger6.log("[SttTtsPlugin] onAttach => space was attached");
   }
   init(params) {
-    var _a;
     elizaLogger6.log(
       "[SttTtsPlugin] init => Space fully ready. Subscribing to events."
     );
     this.space = params.space;
-    this.janus = (_a = this.space) == null ? void 0 : _a.janusClient;
+    this.janus = this.space?.janusClient;
     const config = params.pluginConfig;
-    this.runtime = config == null ? void 0 : config.runtime;
-    this.client = config == null ? void 0 : config.client;
-    this.spaceId = config == null ? void 0 : config.spaceId;
-    this.elevenLabsApiKey = config == null ? void 0 : config.elevenLabsApiKey;
+    this.runtime = config?.runtime;
+    this.client = config?.client;
+    this.spaceId = config?.spaceId;
+    this.elevenLabsApiKey = config?.elevenLabsApiKey;
     this.transcriptionService = config.transcriptionService;
-    if (typeof (config == null ? void 0 : config.silenceThreshold) === "number") {
+    if (typeof config?.silenceThreshold === "number") {
       this.silenceThreshold = config.silenceThreshold;
     }
-    if (config == null ? void 0 : config.voiceId) {
+    if (config?.voiceId) {
       this.voiceId = config.voiceId;
     }
-    if (config == null ? void 0 : config.elevenLabsModel) {
+    if (config?.elevenLabsModel) {
       this.elevenLabsModel = config.elevenLabsModel;
     }
-    if (config == null ? void 0 : config.chatContext) {
+    if (config?.chatContext) {
       this.chatContext = config.chatContext;
     }
     this.volumeBuffers = /* @__PURE__ */ new Map();
@@ -7346,44 +7326,52 @@ var SttTtsPlugin = class {
         merged.set(c, offset);
         offset += c.length;
       }
-      const timestamp = Date.now();
-      const filePath = path2.join(__dirname, `${timestamp}.pcm`);
-      console.log("DEBUG", filePath);
-      fs2.writeFileSync(filePath, Buffer.from(merged.buffer));
-      const wavBuffer = await this.convertPcmToWavInMemory(merged, 48e3);
-      const sttText = await this.transcriptionService.transcribe(wavBuffer);
-      elizaLogger6.log(
-        `[SttTtsPlugin] Transcription result: "${sttText}"`
-      );
-      if (!sttText || !sttText.trim()) {
-        elizaLogger6.warn(
-          "[SttTtsPlugin] No speech recognized for user =>",
-          userId
+      try {
+        const wavBuffer = await this.convertPcmToWavInMemory(merged, 48e3);
+        const sttText = await this.transcriptionService.transcribe(wavBuffer);
+        elizaLogger6.log(
+          `[SttTtsPlugin] Transcription result: "${sttText}"`
         );
+        if (!sttText || !sttText.trim()) {
+          elizaLogger6.warn(
+            "[SttTtsPlugin] No speech recognized for user =>",
+            userId
+          );
+          return;
+        }
+        elizaLogger6.log(
+          `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`
+        );
+        console.log("STT => user=", userId, "text=", sttText);
+        try {
+          const replyText = await this.handleUserMessage(sttText, userId);
+          if (!replyText || !replyText.length || !replyText.trim()) {
+            elizaLogger6.warn(
+              "[SttTtsPlugin] No replyText for user =>",
+              userId
+            );
+            return;
+          }
+          elizaLogger6.log(
+            `[SttTtsPlugin] user=${userId}, reply="${replyText}"`
+          );
+          this.isProcessingAudio = false;
+          this.volumeBuffers.clear();
+          await this.speakText(replyText);
+        } catch (error) {
+          elizaLogger6.error("[SttTtsPlugin] processAudio error1 =>", error);
+        } finally {
+          this.isProcessingAudio = false;
+        }
+      } catch (error) {
+        elizaLogger6.error("[SttTtsPlugin] STT error 2 =>", error);
         return;
       }
-      elizaLogger6.log(
-        `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`
+    } catch (err) {
+      elizaLogger6.error(
+        "[SttTtsPlugin] processAudio error 3 =>",
+        err
       );
-      console.log("STT => user=", userId, "text=", sttText);
-      const replyText = await this.handleUserMessage(sttText, userId);
-      if (!replyText || !replyText.length || !replyText.trim()) {
-        elizaLogger6.warn(
-          "[SttTtsPlugin] No replyText for user =>",
-          userId
-        );
-        return;
-      }
-      elizaLogger6.log(
-        `[SttTtsPlugin] user=${userId}, reply="${replyText}"`
-      );
-      this.isProcessingAudio = false;
-      this.volumeBuffers.clear();
-      await this.speakText(replyText);
-    } catch (error) {
-      elizaLogger6.error("[SttTtsPlugin] processAudio error =>", error);
-    } finally {
-      this.isProcessingAudio = false;
     }
   }
   /**
@@ -7438,7 +7426,6 @@ var SttTtsPlugin = class {
    * Handle User Message
    */
   async handleUserMessage(userText, userId) {
-    var _a, _b, _c;
     const numericId = userId.replace("tw-", "");
     const roomId = stringToUuid6(`twitter_generate_room-${this.spaceId}`);
     const userUuid = stringToUuid6(`twitter-user-${numericId}`);
@@ -7487,7 +7474,7 @@ var SttTtsPlugin = class {
     }
     const context = composeContext4({
       state,
-      template: ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterVoiceHandlerTemplate) || ((_b = this.runtime.character.templates) == null ? void 0 : _b.messageHandlerTemplate) || twitterVoiceHandlerTemplate
+      template: this.runtime.character.templates?.twitterVoiceHandlerTemplate || this.runtime.character.templates?.messageHandlerTemplate || twitterVoiceHandlerTemplate
     });
     const responseContent = await this._generateResponse(memory, context);
     const responseMemory = {
@@ -7502,7 +7489,7 @@ var SttTtsPlugin = class {
       roomId,
       embedding: getEmbeddingZeroVector5()
     };
-    const reply = (_c = responseMemory.content.text) == null ? void 0 : _c.trim();
+    const reply = responseMemory.content.text?.trim();
     if (reply) {
       await this.runtime.messageManager.createMemory(responseMemory);
     }
@@ -7531,7 +7518,6 @@ var SttTtsPlugin = class {
     return response;
   }
   async _shouldIgnore(message) {
-    var _a;
     elizaLogger6.debug("message.content: ", message.content);
     if (message.content.text.length < 3) {
       return true;
@@ -7559,26 +7545,19 @@ var SttTtsPlugin = class {
       "sexy"
     ];
     if (message.content.text.length < 50 && loseInterestWords.some(
-      (word) => {
-        var _a2;
-        return (_a2 = message.content.text) == null ? void 0 : _a2.toLowerCase().includes(word);
-      }
+      (word) => message.content.text?.toLowerCase().includes(word)
     )) {
       return true;
     }
     const ignoreWords = ["k", "ok", "bye", "lol", "nm", "uh"];
-    if (((_a = message.content.text) == null ? void 0 : _a.length) < 8 && ignoreWords.some(
-      (word) => {
-        var _a2;
-        return (_a2 = message.content.text) == null ? void 0 : _a2.toLowerCase().includes(word);
-      }
+    if (message.content.text?.length < 8 && ignoreWords.some(
+      (word) => message.content.text?.toLowerCase().includes(word)
     )) {
       return true;
     }
     return false;
   }
   async _shouldRespond(message, state) {
-    var _a, _b;
     const lowerMessage = message.toLowerCase();
     const characterName = this.runtime.character.name.toLowerCase();
     if (lowerMessage.includes(characterName)) {
@@ -7586,7 +7565,7 @@ var SttTtsPlugin = class {
     }
     const shouldRespondContext = composeContext4({
       state,
-      template: ((_a = this.runtime.character.templates) == null ? void 0 : _a.twitterShouldRespondTemplate) || ((_b = this.runtime.character.templates) == null ? void 0 : _b.shouldRespondTemplate) || composeRandomUser(twitterShouldRespondTemplate2, 2)
+      template: this.runtime.character.templates?.twitterShouldRespondTemplate || this.runtime.character.templates?.shouldRespondTemplate || composeRandomUser(twitterShouldRespondTemplate2, 2)
     });
     const response = await generateShouldRespond2({
       runtime: this.runtime,
@@ -7677,16 +7656,15 @@ var SttTtsPlugin = class {
    * We'll do 10ms @48k => 960 samples per frame
    */
   async streamToJanus(samples, sampleRate) {
-    var _a, _b;
     const FRAME_SIZE = Math.floor(sampleRate * 0.01);
     for (let offset = 0; offset + FRAME_SIZE <= samples.length; offset += FRAME_SIZE) {
-      if ((_a = this.ttsAbortController) == null ? void 0 : _a.signal.aborted) {
+      if (this.ttsAbortController?.signal.aborted) {
         elizaLogger6.log("[SttTtsPlugin] streamToJanus interrupted");
         return;
       }
       const frame = new Int16Array(FRAME_SIZE);
       frame.set(samples.subarray(offset, offset + FRAME_SIZE));
-      (_b = this.janus) == null ? void 0 : _b.pushLocalAudio(frame, sampleRate, 1);
+      this.janus?.pushLocalAudio(frame, sampleRate, 1);
       await new Promise((r) => setTimeout(r, 10));
     }
   }
@@ -7997,15 +7975,14 @@ var TwitterSpaceClient = class {
    * Periodic management: check durations, remove extras, maybe accept new from queue
    */
   async manageCurrentSpace() {
-    var _a, _b;
     if (!this.spaceId || !this.currentSpace) return;
     try {
       const audioSpace = await this.scraper.getAudioSpaceById(
         this.spaceId
       );
       const { participants } = audioSpace;
-      const numSpeakers = ((_a = participants.speakers) == null ? void 0 : _a.length) || 0;
-      const totalListeners = ((_b = participants.listeners) == null ? void 0 : _b.length) || 0;
+      const numSpeakers = participants.speakers?.length || 0;
+      const totalListeners = participants.listeners?.length || 0;
       const maxDur = this.decisionOptions.speakerMaxDurationMs ?? 24e4;
       const now = Date.now();
       for (let i = this.activeSpeakers.length - 1; i >= 0; i--) {
@@ -8066,10 +8043,9 @@ var TwitterSpaceClient = class {
     }
   }
   async handleSpeakerRequest(req) {
-    var _a;
     if (!this.spaceId || !this.currentSpace) return;
     const audioSpace = await this.scraper.getAudioSpaceById(this.spaceId);
-    const janusSpeakers = ((_a = audioSpace == null ? void 0 : audioSpace.participants) == null ? void 0 : _a.speakers) || [];
+    const janusSpeakers = audioSpace?.participants?.speakers || [];
     if (janusSpeakers.length < (this.decisionOptions.maxSpeakers ?? 1)) {
       elizaLogger7.log(`[Space] Accepting speaker @${req.username} now`);
       await speakFiller(

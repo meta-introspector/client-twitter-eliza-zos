@@ -291,57 +291,67 @@ export class SttTtsPlugin implements Plugin {
                 merged.set(c, offset);
                 offset += c.length;
             }
-
-            const timestamp = Date.now();
-            const filePath = path.join(__dirname, `${timestamp}.pcm`);
-            console.log("DEBUG",filePath);
-            fs.writeFileSync(filePath, Buffer.from(merged.buffer));
-
-
-            // Convert PCM to WAV for STT
-            const wavBuffer = await this.convertPcmToWavInMemory(merged, 48000);
-
-            // Whisper STT
-            const sttText =
-                await this.transcriptionService.transcribe(wavBuffer);
-
-            elizaLogger.log(
-                `[SttTtsPlugin] Transcription result: "${sttText}"`,
-            );
-
-            if (!sttText || !sttText.trim()) {
-                elizaLogger.warn(
-                    "[SttTtsPlugin] No speech recognized for user =>",
-                    userId,
+            try {
+                // Convert PCM to WAV for STT
+                const wavBuffer = await this.convertPcmToWavInMemory(merged, 48000);
+    
+                // Whisper STT
+                const sttText =
+                    await this.transcriptionService.transcribe(wavBuffer);
+    
+                elizaLogger.log(
+                    `[SttTtsPlugin] Transcription result: "${sttText}"`,
                 );
-                return;
-            }
-            elizaLogger.log(
-                `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`,
-            );
-            console.log("STT => user=", userId, "text=", sttText);
-            // Get response
-            const replyText = await this.handleUserMessage(sttText, userId);
-            if (!replyText || !replyText.length || !replyText.trim()) {
-                elizaLogger.warn(
-                    "[SttTtsPlugin] No replyText for user =>",
-                    userId,
+    
+                if (!sttText || !sttText.trim()) {
+                    elizaLogger.warn(
+                        "[SttTtsPlugin] No speech recognized for user =>",
+                        userId,
+                    );
+                    return;
+                }
+                elizaLogger.log(
+                    `[SttTtsPlugin] STT => user=${userId}, text="${sttText}"`,
                 );
-                return;
+                console.log("STT => user=", userId, "text=", sttText);
+
+                try {
+                    // Get response
+                    const replyText = await this.handleUserMessage(sttText, userId);
+                    if (!replyText || !replyText.length || !replyText.trim()) {
+                        elizaLogger.warn(
+                            "[SttTtsPlugin] No replyText for user =>",
+                            userId,
+                        );
+                        return;
+                    }
+                    elizaLogger.log(
+                        `[SttTtsPlugin] user=${userId}, reply="${replyText}"`,
+                    );
+                    this.isProcessingAudio = false;
+                    this.volumeBuffers.clear();
+                    // Use the standard speak method with queue
+                    await this.speakText(replyText);
+                } catch (error) {
+                    elizaLogger.error("[SttTtsPlugin] processAudio error1 =>", error);
+                } finally {
+                    this.isProcessingAudio = false;
+                }
+    
+                
+            } catch (error) {
+                elizaLogger.error("[SttTtsPlugin] STT error 2 =>", error);
+                return;      
             }
-            elizaLogger.log(
-                `[SttTtsPlugin] user=${userId}, reply="${replyText}"`,
+        } catch(err) {
+            elizaLogger.error(
+                "[SttTtsPlugin] processAudio error 3 =>",
+                err,
             );
-            this.isProcessingAudio = false;
-            this.volumeBuffers.clear();
-            // Use the standard speak method with queue
-            await this.speakText(replyText);
-        } catch (error) {
-            elizaLogger.error("[SttTtsPlugin] processAudio error =>", error);
-        } finally {
-            this.isProcessingAudio = false;
-        }
-    }
+        } 
+    }    
+
+        
 
     /**
      * Public method to queue a TTS request

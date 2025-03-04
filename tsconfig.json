@@ -16,6 +16,7 @@
         "noImplicitAny": false,
         "allowJs": true,
         "checkJs": false,
+        "target": "ESNext",
         "noEmitOnError": false,
         "moduleDetection": "force",
         "allowArbitraryExtensions": true,

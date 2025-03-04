@@ -315,6 +315,7 @@ export class ClientBase extends EventEmitter {
                 `Failed to login to Twitter. Retrying... (${retries} attempts left)`
             );
 
+            await new Promise((resolve) => setTimeout(resolve, 2000));
             if (retries === 0) {
                 elizaLogger.error(
                     "Max retries reached. Exiting login process."
