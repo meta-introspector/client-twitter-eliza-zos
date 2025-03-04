@@ -7348,6 +7348,7 @@ var SttTtsPlugin = class {
       }
       const timestamp = Date.now();
       const filePath = path2.join(__dirname, `${timestamp}.pcm`);
+      console.log("DEBUG", filePath);
       fs2.writeFileSync(filePath, Buffer.from(merged.buffer));
       const wavBuffer = await this.convertPcmToWavInMemory(merged, 48e3);
       const sttText = await this.transcriptionService.transcribe(wavBuffer);

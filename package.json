@@ -21,7 +21,7 @@
   "dependencies": {
     "@elizaos/core": "workspace:*",
     "@types/hapi__shot": "^6.0.0",
-    "agent-twitter-client": "0.0.18",
+    "agent-twitter-client": "workspace:*",
     "discord.js": "14.16.3",
     "glob": "11.0.0"
   },

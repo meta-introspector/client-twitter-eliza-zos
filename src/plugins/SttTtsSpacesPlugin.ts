@@ -294,6 +294,7 @@ export class SttTtsPlugin implements Plugin {
 
             const timestamp = Date.now();
             const filePath = path.join(__dirname, `${timestamp}.pcm`);
+            console.log("DEBUG",filePath);
             fs.writeFileSync(filePath, Buffer.from(merged.buffer));
 
 
